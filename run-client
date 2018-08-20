@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+use Dixmod\Sockets\Client;
+
+include_once __DIR__ . '/vendor/autoload.php';
+
+$filePhoto = '';
+$inputFilterName = '';
+
+
+
+$client = new Client();
+//$client->setMessage(base64_encode(serialize($message)));
+$resultFileContent = $client->run();
+
+file_put_contents(
+    basename($filePhoto),
+    $resultFileContent
+);
