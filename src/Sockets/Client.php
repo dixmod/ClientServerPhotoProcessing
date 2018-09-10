@@ -10,8 +10,8 @@ class Client extends BaseClientServer
     protected $runRequiredParams = [
         'address::',
         'port::',
-        'fileName:',
-        'filterName:'
+        'file:',
+        'filter:'
     ];
 
     protected $message = '';
@@ -22,12 +22,8 @@ class Client extends BaseClientServer
     {
         parent::__construct();
 
-        /*if (!empty($this->runParams['message'])) {
-            $this->setMessage($this->runParams['message']);
-        }*/
-
-        $this->fileName = $this->runParams['fileName'];
-        $this->filterName = $this->runParams['filterName'];
+        $this->fileName = $this->runParams['file'];
+        $this->filterName = $this->runParams['filter'];
 
         $this->message = base64_encode(serialize([
             'fileName' => basename($this->fileName),

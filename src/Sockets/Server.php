@@ -28,13 +28,13 @@ class Server extends BaseClientServer
     public function run(): void
     {
         for ($i = 0; $i < $this->getThreads(); $i++) {
-
+            $pid_fork = pcntl_fork();
 
             // child process
-            if ($pid_fork == 0) {
+            if (0 === $pid_fork) {
 
                 while (true) {
-                    $pid = posix_getpid();
+                    $pid_fork = posix_getpid();
                     $socket = socket_accept($this->socket);
 
                     echo '[' . $pid_fork . '] Acceptor connect: ' . $socket . PHP_EOL;
