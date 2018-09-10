@@ -38,9 +38,13 @@ abstract class BaseClientServer implements InterfaceClientServer
 
     protected function createSocket()
     {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        if ($this->socket === false) {
-            throw new Exceptions\Socket('Socket created failed');
+        $this->socket = socket_create(
+            AF_INET,
+            SOCK_STREAM,
+            SOL_TCP
+        );
+        if (false === $this->socket) {
+            throw new Exceptions\Socket('Socket created failed'. socket_strerror(socket_last_error()) . PHP_EOL);
         }
     }
 
@@ -94,7 +98,7 @@ abstract class BaseClientServer implements InterfaceClientServer
 
     public function __destruct()
     {
-        if($this->socket)
-            socket_close($this->socket);
+        //if($this->socket)
+          //  socket_close($this->socket);
     }
 }

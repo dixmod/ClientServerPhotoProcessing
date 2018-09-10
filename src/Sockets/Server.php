@@ -27,27 +27,30 @@ class Server extends BaseClientServer
 
     public function run(): void
     {
-        for ($i = 0; $i < $this->getThreads(); $i++) {
+        echo 'Server run' . PHP_EOL;
+//        for ($i = 0; $i < $this->getThreads(); $i++) {
             $pid_fork = pcntl_fork();
-
-            // child process
-            if (0 === $pid_fork) {
-
+//
+//            // child process
+//            if (0 === $pid_fork) {
+//
                 while (true) {
-                    $pid_fork = posix_getpid();
+//                    $pid_fork = posix_getpid();
                     $socket = socket_accept($this->socket);
 
-                    echo '[' . $pid_fork . '] Acceptor connect: ' . $socket . PHP_EOL;
+                    echo 'Acceptor connect: ' . $socket . PHP_EOL;
 
-                    echo 'I receive the message' . PHP_EOL;
+                    echo 'I receive the answer' . PHP_EOL;
 
                     $message = '';
-                    while(($buf = socket_read($socket, self::MESSAGE_LIMIT, PHP_NORMAL_READ)) !== ""){
-                        //$message .= $buf;
+
+                    while ("" !== ($buf = socket_read($socket, self::MESSAGE_LIMIT, PHP_BINARY_READ))) {
+                        $message .= $buf;
                         echo '.';
                         usleep(10);
                     }
                     echo PHP_EOL;
+
                     sleep(1);
                     $message = unserialize(base64_decode($message));
                     $tmpFileName = getcwd() . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . $message['fileName'];
@@ -81,13 +84,16 @@ class Server extends BaseClientServer
 
                     socket_close($socket);
                 }
-            }
-        }
 
-        while (($cid = pcntl_waitpid(0, $status)) != -1) {
-            $exit_code = pcntl_wexitstatus($status);
-            echo '[' . $cid . '] exited with status: ' . $exit_code . PHP_EOL;
-        }
+                socket_close($this->socket);
+//                }
+//            }
+//        }
+//
+//        while (($cid = pcntl_waitpid(0, $status)) != -1) {
+//            $exit_code = pcntl_wexitstatus($status);
+//            echo '[' . $cid . '] exited with status: ' . $exit_code . PHP_EOL;
+//        }
     }
 
     /**

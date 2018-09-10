@@ -18,51 +18,55 @@ class Client extends BaseClientServer
     private $filterName;
     private $fileName;
 
-    public function __construct($message = '')
+    public function __construct()
     {
         parent::__construct();
-
-        $this->fileName = $this->runParams['file'];
-        $this->filterName = $this->runParams['filter'];
-
-        $this->message = base64_encode(serialize([
-            'fileName' => basename($this->fileName),
-            'filterName' => $this->filterName,
-            'fileContent' => file_get_contents($this->fileName)
-        ]));
 
         $this->connect();
     }
 
     public function run()
     {
+        $this->fileName = $this->runParams['file'];
+        $this->filterName = $this->runParams['filter'];
+
+        $message = base64_encode(serialize([
+            'fileName' => basename($this->fileName),
+            'filterName' => $this->filterName,
+            'fileContent' => file_get_contents($this->fileName)
+        ]))."\n";
+
+        echo 'I send answer' . PHP_EOL;
         socket_write(
             $this->socket,
-            $this->getMessage(),
-            strlen($this->message)
+            $message,
+            strlen($message)
         );
-
-        sleep(1);
-
+        socket_close($this->socket);
+//
         echo 'I get answer' . PHP_EOL;
         $answer = '';
-        while (($buf = socket_read($this->socket, self::MESSAGE_LIMIT)) !== "") {
+        while ("" !== ($buf = socket_read($this->socket, self::MESSAGE_LIMIT, PHP_BINARY_READ))) {
             $answer .= $buf;
             echo '.';
             usleep(10);
+            var_dump($buf);
         }
+
+        print_r($answer);
+
         socket_close($this->socket);
 
-        $message = unserialize(base64_decode($answer)) . PHP_EOL;
+//        $message = unserialize(base64_decode($answer));
         //return $message['fileContent'];
+//print_r($message); exit;
 
+//        $tmpFileName = getcwd() . DIRECTORY_SEPARATOR . $message['fileName'];
 
-        $tmpFileName = getcwd() . DIRECTORY_SEPARATOR . $message['fileName'];
-
-        file_put_contents(
-            $tmpFileName,
-            $message['fileContent']
-        );
+//        file_put_contents(
+//            $tmpFileName,
+//            $message['fileContent']
+//        );
     }
 
     /**
